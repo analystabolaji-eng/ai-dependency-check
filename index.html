@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Dependency Check</title>
+<meta name="description" content="Three questions to find out how much your work depends on AI. A free tool by Abolaji the Tech BA.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1F2A44;--teal:#2A9D8F;--teal-t:#DDEFEC;--off:#F7F5F0;--sand:#E9C46A;--sand-t:#FBF1D6;--coral:#E76F51;--coral-t:#FBE3DC;--grey:#6E7687;--line:#D5D9E0;}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--off);color:var(--navy);font-family:Inter,Helvetica,Arial,sans-serif;font-size:17px;line-height:1.5}
+  h1,h2,h3{font-family:Poppins,Helvetica,Arial,sans-serif;line-height:1.2;margin:0 0 .4em}
+  header{background:var(--navy);color:#fff;padding:22px 20px 26px}
+  .wrap{max-width:640px;margin:0 auto}
+  .brand{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--sand);font-weight:600}
+  header h1{font-size:30px;margin-top:6px}
+  header p{margin:0;color:#E8ECF3}
+  main{padding:22px 20px 30px}
+  .card{background:#fff;border-radius:18px;padding:22px;box-shadow:0 2px 0 var(--line)}
+  .screen{display:none}
+  .screen.on{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  label.lbl{font-weight:600;display:block;margin:4px 0 6px}
+  input[type=text]{width:100%;font:inherit;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--navy)}
+  input[type=text]:focus{outline:none;border-color:var(--teal)}
+  .hint{color:var(--grey);font-size:14px;margin:6px 0 0}
+  .tip{background:var(--teal-t);border-left:4px solid var(--teal);border-radius:10px;padding:10px 12px;font-size:15px;margin-top:14px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 16px Inter,Helvetica,Arial,sans-serif;border:0;border-radius:999px;padding:13px 22px;cursor:pointer;text-decoration:none;transition:transform .1s}
+  .btn:active{transform:scale(.97)}
+  .btn.primary{background:var(--teal);color:#fff}
+  .btn.ghost{background:transparent;color:var(--navy);border:2px solid var(--line)}
+  .btn.sand{background:var(--sand);color:var(--navy)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .progress{height:8px;background:#E6E9EF;border-radius:99px;overflow:hidden;margin-bottom:8px}
+  .progress i{display:block;height:100%;background:var(--teal);border-radius:99px;transition:width .35s}
+  .step{font-size:14px;color:var(--grey);margin-bottom:12px}
+  .qtitle{font-size:22px}
+  .why{font-size:14px;color:var(--grey);margin:-2px 0 14px}
+  .opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--off);border:2px solid transparent;border-radius:14px;padding:13px 14px;margin:0 0 10px;cursor:pointer;font:inherit;color:inherit}
+  .opt:hover{border-color:var(--line)}
+  .opt.sel{border-color:var(--teal);background:var(--teal-t)}
+  .opt .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;font:700 15px Poppins,sans-serif;display:flex;align-items:center;justify-content:center}
+  .opt.sel .n{background:var(--teal)}
+  .opt b{display:block}
+  .example-note{background:var(--sand-t);border-radius:10px;padding:9px 12px;font-size:14px;margin-bottom:12px;display:none}
+  .example .example-note{display:block}
+  .score{display:flex;align-items:center;gap:16px;margin:4px 0 12px}
+  .big{font:700 46px Poppins,sans-serif;line-height:1}
+  .big small{font-size:20px;color:var(--grey)}
+  .badge{display:inline-block;font:700 18px Poppins,sans-serif;padding:6px 16px;border-radius:999px}
+  .lvl-low{background:var(--teal-t);color:#1d6f65}
+  .lvl-medium{background:var(--sand-t);color:#8a6512}
+  .lvl-high{background:var(--coral-t);color:#a3401f}
+  .task-name{font-weight:600}
+  .rule{background:#E9ECF2;border-left:4px solid var(--navy);border-radius:10px;padding:10px 12px;font-size:15px;margin:10px 0}
+  .checks label{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #EEF0F4;cursor:pointer}
+  .checks input{width:20px;height:20px;accent-color:var(--teal);margin-top:3px;flex:none}
+  .sub{font-size:18px;margin-top:20px}
+  .prompt{background:var(--navy);color:#E8ECF3;border-radius:14px;padding:14px;font-size:14.5px;white-space:pre-wrap;line-height:1.45}
+  .safe{font-size:13.5px;color:var(--grey);margin-top:8px}
+  table{width:100%;border-collapse:collapse;font-size:15px;margin-top:6px}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid #EEF0F4;vertical-align:top}
+  th{font-size:13px;color:var(--grey);font-weight:600}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(30px);background:var(--navy);color:#fff;padding:10px 16px;border-radius:999px;font-size:15px;opacity:0;transition:.3s;pointer-events:none;z-index:20;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+  .modal{position:fixed;inset:0;background:rgba(20,28,46,.7);display:none;align-items:center;justify-content:center;padding:18px;z-index:10}
+  .modal.on{display:flex}
+  .modal .box{background:#fff;border-radius:18px;padding:16px;max-width:420px;width:100%;max-height:92vh;overflow:auto;text-align:center}
+  .modal img{width:100%;border-radius:10px;display:block;margin-bottom:10px}
+  footer{padding:24px 20px 34px;text-align:center;font-size:13.5px;color:var(--grey)}
+  footer .tl{color:var(--teal);font-weight:600;font-size:15px}
+  .robot{display:block;margin:0 auto 6px}
+  .start-top{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+  .start-top svg{flex:none}
+  a{color:var(--teal)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">Free tool · Abolaji the Tech BA</div>
+    <h1>AI Dependency Check</h1>
+    <p>Three questions to find out how much your work depends on AI.</p>
+  </div>
+</header>
+
+<main class="wrap" id="app">
+
+  <!-- START -->
+  <section class="screen on" id="s-start">
+    <div class="card">
+      <div class="start-top">
+        <svg width="74" height="86" viewBox="0 0 160 186" aria-hidden="true"><use href="#robot"/></svg>
+        <p style="margin:0">Takes about a minute. <b>Nothing you enter is saved.</b></p>
+      </div>
+      <label class="lbl" for="task">Which task are you checking? <span style="font-weight:400;color:var(--grey)">(optional)</span></label>
+      <input type="text" id="task" maxlength="80" placeholder="e.g. Drafting replies to refund emails" autocomplete="off">
+      <p class="hint">Use a general description. Please don't enter anything confidential or personal.</p>
+      <div class="tip"><b>Tip:</b> score the task, not the tool. The same AI tool can be low risk for one task and high risk for another.</div>
+      <div class="row">
+        <button class="btn primary" id="go">Start the check</button>
+        <button class="btn ghost" id="example">Try an example first</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUESTIONS -->
+  <section class="screen" id="s-q">
+    <div class="card" id="qcard">
+      <div class="progress"><i id="bar" style="width:33%"></i></div>
+      <div class="step" id="stepTxt">Question 1 of 3</div>
+      <div class="example-note">✨ <b>Example:</b> a supermarket uses AI to sort refund requests. We've chosen the answer for you, so tap <b>Next</b>.</div>
+      <h2 class="qtitle" id="qTitle"></h2>
+      <p class="why" id="qWhy"></p>
+      <div id="opts"></div>
+      <div class="tip" id="qTip" style="display:none"></div>
+      <div class="row">
+        <button class="btn ghost" id="back">Back</button>
+        <button class="btn primary" id="next" disabled>Next</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="s-result">
+    <div class="card">
+      <svg class="robot" width="70" height="82" viewBox="0 0 160 186" aria-hidden="true"><use href="#robot"/></svg>
+      <p style="margin:0 0 4px">Task: <span class="task-name" id="rTask"></span></p>
+      <div class="score"><div class="big" id="rScore"></div><span class="badge" id="rBadge"></span></div>
+      <p id="rSummary" style="margin:0"></p>
+      <div class="rule" id="rRule" style="display:none"><b>★ Safety rule:</b> because a mistake here could cause serious harm, this task is <b>High</b>, whatever the total.</div>
+
+      <h3 class="sub">Your safeguards</h3>
+      <div class="checks" id="rChecks"></div>
+
+      <h3 class="sub">Next steps</h3>
+      <div class="checks">
+        <label><input type="checkbox"><span><b>Who owns this task?</b> Name a role, not a person.</span></label>
+        <label><input type="checkbox"><span><b>When will you check it again?</b> AI tools change, so check again when they update.</span></label>
+      </div>
+
+      <h3 class="sub">Ask AI to help, safely</h3>
+      <div class="prompt" id="rPrompt"></div>
+      <p class="safe">Only use AI tools your organisation has approved, and don't paste confidential or personal information. Check every suggestion before you use it. <b>Context in. Human in the loop.</b></p>
+
+      <div class="row">
+        <button class="btn primary" id="copyPrompt">Copy the prompt</button>
+        <button class="btn sand" id="makeCard">Make my result card</button>
+        <button class="btn ghost" id="copyResult">Copy my result</button>
+      </div>
+      <div class="row">
+        <button class="btn ghost" id="again">Check another task</button>
+        <a class="btn primary" id="kit" href="https://relentless-knitter-9527.kit.com/e91b847e65" target="_blank" rel="noopener">Get the free template</a>
+      </div>
+    </div>
+
+    <div class="card" id="tasksCard" style="margin-top:16px;display:none">
+      <h3 style="font-size:18px">Your tasks</h3>
+      <p class="hint" style="margin-top:0">Only on this screen. It clears when you close the page.</p>
+      <table><thead><tr><th>Task</th><th>Score</th><th>Level</th></tr></thead><tbody id="tasksBody"></tbody></table>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="tl">Use AI fully. Depend on it wisely.</div>
+  <div>Context in. Human in the loop.</div>
+  <div style="margin-top:8px"><b>@abolajithetechba</b> · Clear requirements. Thoroughly tested. Explained simply.</div>
+  <div style="margin-top:8px">Views are my own and not related to any organisation. A general starting point, not legal or compliance advice. Always follow your organisation's own AI policy.</div>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Your result card">
+  <div class="box">
+    <img id="cardImg" alt="Your AI Dependency Check result card">
+    <p class="hint" id="saveHint" style="margin:0 0 10px">On a phone, press and hold the image to save it.</p>
+    <div class="row" style="justify-content:center;margin-top:6px">
+      <button class="btn primary" id="saveCard">Save image</button>
+      <button class="btn ghost" id="closeModal">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="robot">
+      <line x1="80" y1="22" x2="80" y2="40" stroke="#21807A" stroke-width="6" stroke-linecap="round"/>
+      <polygon points="80,4 84.5,15 96,15 87,22 90,33 80,26.5 70,33 73,22 64,15 75.5,15" fill="#E9C46A"/>
+      <rect x="16" y="40" width="128" height="94" rx="24" fill="#2A9D8F"/>
+      <rect x="31" y="54" width="98" height="65" rx="17" fill="#fff"/>
+      <circle cx="60" cy="84" r="8" fill="#1F2A44"/><circle cx="100" cy="84" r="8" fill="#1F2A44"/>
+      <path d="M66 98 Q80 110 94 98" stroke="#1F2A44" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <rect x="32" y="138" width="96" height="44" rx="16" fill="#2A9D8F"/>
+      <circle cx="80" cy="158" r="9" fill="#E9C46A"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  var KIT = "https://relentless-knitter-9527.kit.com/e91b847e65";
+  var QS = [
+    {t:"If it’s wrong, how bad is it?", why:"Why it matters: AI can be confidently wrong.",
+     o:[["Minor","and easy to fix (e.g. awkward wording)"],["Noticeable:","delays, rework, an unhappy customer"],["Serious:","harm to people’s money, health, access or safety, or a legal problem"]],
+     s:["minor","noticeable","serious"]},
+    {t:"If it stopped tomorrow, could we cope?", why:"Why it matters: AI tools can stop, and our skills fade.",
+     o:[["Yes.","The manual way is written down and people know it."],["Slowly.","It’s possible, but painful."],["No.","Nobody remembers how, or there’s no backup."]],
+     s:["yes, the manual way is written down","slowly, possible but painful","no, there is no working backup"]},
+    {t:"Would we notice?", why:"Why it matters: mistakes can spread quietly.",
+     o:[["Yes.","A person checks every output."],["Sometimes.","We do spot checks."],["Probably not.","We’d only find out from complaints."]],
+     s:["yes, a person checks every output","sometimes, we do spot checks","probably not, only from complaints"],
+     tip:"<b>Tip:</b> if you can’t name who checks the output, choose 3."}
+  ];
+  var LEVELS = {
+    Low:{cls:"lvl-low", col:"#2A9D8F", tint:"#DDEFEC", text:"#1d6f65", line:"Give it a quick check before you use it.",
+      checks:["Give it a quick check before you use it"]},
+    Medium:{cls:"lvl-medium", col:"#E9C46A", tint:"#FBF1D6", text:"#8a6512", line:"A person reviews every output, and the manual way is written down.",
+      checks:["A person reviews every output","The manual way is written down"]},
+    High:{cls:"lvl-high", col:"#E76F51", tint:"#FBE3DC", text:"#a3401f", line:"A person makes the final decision, with a practised backup, regular checks and one named owner.",
+      checks:["A person makes the final decision","The backup process is written down and practised","Outputs are checked regularly","One named person owns it"]}
+  };
+  var EXAMPLE_TASK = "Sorting refund requests (supermarket example)";
+  var EXAMPLE_ANS = [3,3,3];
+
+  var state = {q:0, ans:[0,0,0], task:"", example:false, result:null};
+  var history = [];
+  var $ = function(id){return document.getElementById(id);};
+
+  function show(id){
+    ["s-start","s-q","s-result"].forEach(function(s){$(s).classList.toggle("on", s===id);});
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+  function toast(msg){
+    var t=$("toast"); t.textContent=msg; t.classList.add("show");
+    clearTimeout(toast._t); toast._t=setTimeout(function(){t.classList.remove("show");},2600);
+  }
+  function esc(s){return s.replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+
+  function start(example){
+    state.example = example;
+    state.task = example ? EXAMPLE_TASK : ($("task").value.trim() || "My AI task");
+    state.ans = example ? EXAMPLE_ANS.slice() : [0,0,0];
+    state.q = 0;
+    $("qcard").classList.toggle("example", example);
+    renderQ(); show("s-q");
+  }
+  function renderQ(){
+    var Q = QS[state.q];
+    $("bar").style.width = ((state.q+1)/3*100)+"%";
+    $("stepTxt").textContent = "Question "+(state.q+1)+" of 3";
+    $("qTitle").textContent = Q.t; $("qWhy").textContent = Q.why;
+    var box=$("opts"); box.innerHTML="";
+    Q.o.forEach(function(o,i){
+      var b=document.createElement("button"); b.type="button"; b.className="opt"+(state.ans[state.q]===i+1?" sel":"");
+      b.innerHTML='<span class="n">'+(i+1)+'</span><span><b>'+o[0]+'</b>'+o[1]+'</span>';
+      b.onclick=function(){ if(state.example) return; state.ans[state.q]=i+1; renderQ(); };
+      if(state.example) b.style.cursor="default";
+      box.appendChild(b);
+    });
+    $("qTip").style.display = Q.tip ? "block":"none"; if(Q.tip) $("qTip").innerHTML=Q.tip;
+    $("next").disabled = !state.ans[state.q];
+    $("next").textContent = state.q===2 ? "See my result" : "Next";
+  }
+  $("next").onclick=function(){ if(state.q<2){state.q++; renderQ();} else result(); };
+  $("back").onclick=function(){ if(state.q>0){state.q--; renderQ();} else show("s-start"); };
+  $("go").onclick=function(){start(false);};
+  $("example").onclick=function(){start(true);};
+  $("task").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();start(false);}});
+
+  function result(){
+    var total = state.ans[0]+state.ans[1]+state.ans[2];
+    var level = total<=4 ? "Low" : total<=6 ? "Medium" : "High";
+    var rule = state.ans[0]===3 && level!=="High";
+    if(state.ans[0]===3) level="High";
+    var L = LEVELS[level];
+    state.result = {total:total, level:level, rule:rule};
+    $("rTask").textContent = state.task;
+    $("rScore").innerHTML = total+'<small> / 9</small>';
+    var bd=$("rBadge"); bd.className="badge "+L.cls; bd.textContent=level;
+    $("rSummary").textContent = L.line;
+    $("rRule").style.display = rule ? "block":"none";
+    $("rChecks").innerHTML = L.checks.map(function(c){return '<label><input type="checkbox"><span>'+c+'</span></label>';}).join("");
+    $("rPrompt").textContent = buildPrompt();
+    history.push({task:state.task, total:total, level:level});
+    $("tasksCard").style.display="block";
+    $("tasksBody").innerHTML = history.map(function(h){
+      return '<tr><td>'+esc(h.task)+'</td><td>'+h.total+'/9</td><td><span class="badge '+LEVELS[h.level].cls+'" style="font-size:13px;padding:2px 10px">'+h.level+'</span></td></tr>';
+    }).join("");
+    show("s-result");
+  }
+  function buildPrompt(){
+    var r=state.result;
+    return "Context: I'm checking how much one task at work depends on AI.\n"+
+      "Task: "+state.task+"\n"+
+      "If the AI is wrong, the impact is "+QS[0].s[state.ans[0]-1]+".\n"+
+      "If the AI stopped tomorrow, could we cope? "+cap(QS[1].s[state.ans[1]-1])+".\n"+
+      "Would we notice a mistake? "+cap(QS[2].s[state.ans[2]-1])+".\n"+
+      "My AI Dependency Check score: "+r.total+"/9, level "+r.level+".\n\n"+
+      "Using the context above, suggest 3 to 5 practical safeguards for this task, in plain English. "+
+      "For each one, say what a person must still check or decide. Keep it simple and realistic for a small team.";
+  }
+  function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+  function summaryText(){
+    var r=state.result;
+    return "AI Dependency Check\nTask: "+state.task+"\nScore: "+r.total+"/9 · Level: "+r.level+
+      "\nSafeguards: "+LEVELS[r.level].checks.join("; ")+
+      "\n\nTry it yourself: "+KIT+"\n@abolajithetechba";
+  }
+  function copy(text, ok){
+    function fallback(){
+      var ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.select();
+      var done=false; try{done=document.execCommand("copy");}catch(e){}
+      document.body.removeChild(ta);
+      toast(done? ok : "Couldn’t copy. Press and hold the text to copy it.");
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){toast(ok);}, fallback);
+    } else fallback();
+  }
+  $("copyPrompt").onclick=function(){copy($("rPrompt").textContent,"Prompt copied. Paste it into your approved AI tool.");};
+  $("copyResult").onclick=function(){copy(summaryText(),"Result copied.");};
+  $("again").onclick=function(){ $("task").value=""; show("s-start"); setTimeout(function(){$("task").focus();},300); };
+
+  // ---------- result card (1080x1350 PNG) ----------
+  var cardBlob=null;
+  function wrapLines(ctx, text, maxW){
+    var words=text.split(" "), lines=[], cur="";
+    words.forEach(function(w){var t=cur?cur+" "+w:w; if(ctx.measureText(t).width>maxW && cur){lines.push(cur);cur=w;} else cur=t;});
+    if(cur) lines.push(cur); return lines;
+  }
+  function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function drawRobot(ctx,cx,cy,s){
+    ctx.save(); ctx.translate(cx,cy); ctx.scale(s,s);
+    ctx.strokeStyle="#21807A"; ctx.lineWidth=6; ctx.lineCap="round"; ctx.beginPath(); ctx.moveTo(0,-74); ctx.lineTo(0,-56); ctx.stroke();
+    ctx.fillStyle="#E9C46A"; ctx.beginPath();
+    for(var i=0;i<10;i++){var r=i%2?6:13, a=-Math.PI/2+i*Math.PI/5; ctx.lineTo(Math.cos(a)*r, -84+Math.sin(a)*r);} ctx.closePath(); ctx.fill();
+    ctx.fillStyle="#2A9D8F"; rr(ctx,-64,-56,128,94,24); ctx.fill();
+    ctx.fillStyle="#fff"; rr(ctx,-49,-42,98,65,17); ctx.fill();
+    ctx.fillStyle="#1F2A44"; ctx.beginPath(); ctx.arc(-20,-12,8,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(20,-12,8,0,7); ctx.fill();
+    ctx.strokeStyle="#1F2A44"; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(-14,2); ctx.quadraticCurveTo(0,14,14,2); ctx.stroke();
+    ctx.fillStyle="#2A9D8F"; rr(ctx,-48,42,96,44,16); ctx.fill();
+    ctx.fillStyle="#E9C46A"; ctx.beginPath(); ctx.arc(0,62,9,0,7); ctx.fill();
+    ctx.restore();
+  }
+  function makeCard(){
+    var r=state.result, L=LEVELS[r.level];
+    var c=document.createElement("canvas"); c.width=1080; c.height=1350; var x=c.getContext("2d");
+    x.fillStyle="#1F2A44"; x.fillRect(0,0,1080,1350);
+    x.fillStyle="#2A9D8F"; x.fillRect(0,0,1080,14);
+    // tag
+    x.font="600 30px Inter, Arial"; var tg="AI Dependency Check"; var tw=x.measureText(tg).width+56;
+    x.fillStyle="#2A9D8F"; rr(x,90,96,tw,60,30); x.fill(); x.fillStyle="#fff"; x.textBaseline="middle"; x.fillText(tg,118,127);
+    // task
+    x.fillStyle="#C9D1DE"; x.font="600 34px Inter, Arial"; x.textBaseline="alphabetic"; x.fillText("My task:",90,250);
+    x.fillStyle="#fff"; x.font="700 56px Poppins, Arial";
+    var lines=wrapLines(x,state.task,900).slice(0,3); lines.forEach(function(l,i){x.fillText(l,90,322+i*70);});
+    var y=322+lines.length*70+40;
+    // score panel
+    x.fillStyle="#fff"; rr(x,90,y,900,330,36); x.fill();
+    x.fillStyle="#1F2A44"; x.font="700 150px Poppins, Arial"; x.fillText(String(r.total),140,y+190);
+    var sw=x.measureText(String(r.total)).width;
+    x.fillStyle="#6E7687"; x.font="600 56px Poppins, Arial"; x.fillText("/ 9",150+sw,y+190);
+    x.font="700 54px Poppins, Arial"; var lw=x.measureText(r.level).width+80;
+    x.fillStyle=L.tint; rr(x,950-lw,y+92,lw,100,50); x.fill();
+    x.fillStyle=L.text; x.textBaseline="middle"; x.fillText(r.level,990-lw,y+144); x.textBaseline="alphabetic";
+    x.fillStyle="#1F2A44"; x.font="400 32px Inter, Arial";
+    var cardLine = r.rule ? "Safety rule: a mistake here could cause serious harm, so this task is High." : L.line;
+    wrapLines(x,cardLine,800).slice(0,2).forEach(function(l,i){x.fillText(l,140,y+258+i*42);});
+    y+=330+70;
+    x.fillStyle="#E9C46A"; x.font="600 36px Inter, Arial"; x.fillText("How much does your work depend on AI?",90,y);
+    x.fillStyle="#E8ECF3"; x.font="400 32px Inter, Arial"; x.fillText("Take the free 3-question check.",90,y+50);
+    drawRobot(x,915,1110,0.95);
+    x.fillStyle="#2A9D8F"; x.font="600 34px Inter, Arial"; x.fillText("Use AI fully. Depend on it wisely.",90,1218);
+    x.fillStyle="#fff"; x.font="600 30px Inter, Arial"; x.fillText("@abolajithetechba",90,1266);
+    x.fillStyle="#C9D1DE"; x.font="400 24px Inter, Arial"; x.fillText("Clear requirements. Thoroughly tested. Explained simply.",90,1306);
+    return c;
+  }
+  $("makeCard").onclick=function(){
+    var go=function(){
+      var c=makeCard();
+      $("cardImg").src=c.toDataURL("image/png");
+      c.toBlob(function(b){cardBlob=b;},"image/png");
+      $("modal").classList.add("on");
+    };
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(go); else go();
+  };
+  $("closeModal").onclick=function(){$("modal").classList.remove("on");};
+  $("modal").onclick=function(e){if(e.target===$("modal")) $("modal").classList.remove("on");};
+
+  // Saving: Claude page downloads capability > share sheet > normal download
+  var claudeDl=null;
+  if(window.claude && typeof window.claude.use==="function"){
+    try{ window.claude.use("downloads").then(function(d){claudeDl=d;}, function(){}); }catch(e){}
+  }
+  var FILE="my-ai-dependency-result.png";
+  $("saveCard").onclick=function(){
+    if(!cardBlob){toast("One moment…");return;}
+    if(claudeDl){
+      claudeDl.save({filename:FILE, data:cardBlob}).then(function(){toast("Saved.");},function(err){
+        if(err && err.code==="declined") return;
+        toast("Press and hold the image to save it.");
+      });
+      return;
+    }
+    try{
+      var f=new File([cardBlob],FILE,{type:"image/png"});
+      if(navigator.canShare && navigator.canShare({files:[f]})){
+        navigator.share({files:[f], title:"My AI Dependency Check result"}).catch(function(){});
+        return;
+      }
+    }catch(e){}
+    var a=document.createElement("a"); a.href=URL.createObjectURL(cardBlob); a.download=FILE;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){toast("If nothing downloaded, press and hold the image to save it.");},800);
+  };
+})();
+</script>
+</body>
+</html>
